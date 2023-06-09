@@ -31,7 +31,7 @@ ifndef OBJ_DIR
     OBJ_DIR = ./build
 endif
 ifndef EXE_DIR
-    EXE_DIR = OBJ_DIR
+    EXE_DIR = $(OBJ_DIR)
 endif
 
 # TODO: add flags for linking in rest of certifier
@@ -89,4 +89,4 @@ bare_app: $(bare-dobj) $(KEYSTONE_SDK_LIB)
 	$(LINK) -o $(EXE_DIR)/bare_app $(bare-dobj) $(LDFLAGS)
 
 clean:
-	rm -f $(internal-dobj) $(EXE_DIR)/keystone_certifier_app $(O)/dummy_main.o $(EXE_DIR)/keystone_api $(bare-dobj)
+	rm -f $(O) $(EXE_DIR)/keystone_certifier_app $(O)/dummy_main.o $(EXE_DIR)/keystone_api $(bare-dobj)
