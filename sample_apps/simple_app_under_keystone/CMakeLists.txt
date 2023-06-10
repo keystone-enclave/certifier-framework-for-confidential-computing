@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(certifier-keystone)
+
+set(KEYSTONE_SDK_DIR "/keystone/sdk/build64")
+set(KEYSTONE_EYRIE_RUNTIME "/keystone/runtime")
+set(KEYSTONE_EAPP_BIN "bare_app")
+
 include(${KEYSTONE_SDK_DIR}/cmake/macros.cmake)
+
 find_program(MAKESELF makeself)
 use_riscv_toolchain(64)
 
 get_filename_component(eapp_bin ${KEYSTONE_EAPP_BIN} NAME)
 add_custom_command(OUTPUT ${eapp_bin}
+	COMMAND ${CMAKE_MAKE_PROGRAM} -C ${CMAKE_CURRENT_SOURCE_DIR} -f keystone_example_app.mak ${eapp_bin}
 	COMMAND cp ${KEYSTONE_EAPP_BIN} ${CMAKE_CURRENT_BINARY_DIR}/${eapp_bin})
 set(host_bin runner)
 set(host_src host/host.cpp)

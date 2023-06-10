@@ -62,7 +62,7 @@ bool keystone_getSealingKey(WORD key[]) {
 
 bool keystone_Seal(int in_size, byte* in, int* size_out, byte* out) {
   WORD key[AES_SCHEDULE_LEN];
-  if (keystone_getSealingKey(key)) {
+  if (!keystone_getSealingKey(key)) {
     return false;
   }
   BYTE iv[AES_BLOCK_SIZE];
@@ -74,7 +74,7 @@ bool keystone_Seal(int in_size, byte* in, int* size_out, byte* out) {
 
 bool keystone_Unseal(int in_size, byte* in, int* size_out, byte* out) {
   WORD key[AES_SCHEDULE_LEN];
-  if (keystone_getSealingKey(key)) {
+  if (!keystone_getSealingKey(key)) {
     return false;
   }
   BYTE iv[AES_BLOCK_SIZE];
