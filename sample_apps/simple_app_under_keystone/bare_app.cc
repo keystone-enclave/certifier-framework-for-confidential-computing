@@ -28,6 +28,7 @@ bool keystone_test(const int cert_size, byte *cert) {
         return false;
     }
 
+    bool success = true;
     int size_secret = SIZE_SECRET;
     byte secret[size_secret];
     int size_sealed_secret = SIZE_SECRET;
@@ -41,17 +42,21 @@ bool keystone_test(const int cert_size, byte *cert) {
 
     if (!keystone_Seal(size_secret, secret, &size_sealed_secret, sealed_secret)) {
         printf("keystone_Seal() fails\n");
+        success = false;
     }
     if (!keystone_Unseal(size_sealed_secret, sealed_secret, &size_unsealed_secret, unsealed_secret)) {
         printf("keystone_Unseal() fails\n");
+        success = false;
     }
     int memcmp_rc = 0;
     if (size_unsealed_secret != size_secret) {
         printf("Sealed and unsealed secrets lengths do not match, size_unsealed_secret=%d, size_secret=%d\n",
                size_unsealed_secret, size_secret);
+        success = false;
     }
     else if ((memcmp_rc = memcmp(secret, unsealed_secret, size_unsealed_secret)) != 0) {
         printf("Sealed and unsealed secrets do not match, memcmp_rc=%d\n", memcmp_rc);
+        success = false;
     }
 
     int size_what_to_say = SIZE_WHAT_TO_SAY;
@@ -65,18 +70,16 @@ bool keystone_test(const int cert_size, byte *cert) {
         what_to_say[i] = (byte)i;
     }
 
-    int ret = keystone_Attest(size_what_to_say, what_to_say,
-                         &size_attestation, attestation);
-            
-    // if (!keystone_Attest(size_what_to_say, what_to_say,
-    //                     &size_attestation, attestation)) {
-    if (ret != 0) {
+    if (!keystone_Attest(size_what_to_say, what_to_say,
+                         &size_attestation, attestation)) {
         printf("keystone_Attest() fails, ret: %d\n", ret);
+        success = false;
     }
     printf("keystone_Attest() successful!\n");
     if (!keystone_Verify(size_what_to_say, what_to_say,
                          size_attestation, attestation, &size_measurement, measurement)) {
         printf("keystone_Verify() fails\n");
+        success = false;
     }
     printf("Measurement: ");
     for (int i = 0; i < size_measurement; i++) {
@@ -84,9 +87,9 @@ bool keystone_test(const int cert_size, byte *cert) {
     }
     printf("\n");
 
-    return true;
+    return success;
 }
 
 int main(int argc, char** argv) {
-    return keystone_test(0, NULL);
+    return !keystone_test(0, NULL);
 }
