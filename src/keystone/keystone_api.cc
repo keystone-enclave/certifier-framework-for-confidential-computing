@@ -17,32 +17,65 @@ bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attesta
   printf("attestation_size_out: %x\n", attestation_size_out);
   *attestation_size_out = sizeof(struct report_t);
   printf("*attestation_size_out: %d\n", *attestation_size_out);
-  return attest_enclave((void *) attestation_out, what_to_say, what_to_say_size) == 0;
+  printf("keystone_Attest 1 sees what_to_say:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+      printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
+  byte what_to_say_copy[what_to_say_size];
+  memcpy(what_to_say_copy, what_to_say, what_to_say_size);
+  printf("keystone_Attest 2 sees what_to_say:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+      printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
+  bool ret = attest_enclave((void *) attestation_out, what_to_say_copy, what_to_say_size) == 0;
+  printf("keystone_Attest 3 sees what_to_say:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
+  return ret;
 }
 
 bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int attestation_size, byte* attestation, int* measurement_out_size, byte* measurement_out) {
   // assert(attestation_size == sizeof(struct report_t));
+  printf("kVerify1 sees what_to_say #2:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
   Report report;
   report.fromBytes(attestation);
 
   if(!report.checkSignaturesOnly(_sanctum_dev_public_key)) {
     return false;
   }
+  printf("kVerify2 sees what_to_say #2:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
 
   if (report.getDataSize() != (unsigned int) what_to_say_size) {
     return false;
   }
   byte* report_says = (byte*) report.getDataSection();
+  printf("kVerify3 sees what_to_say #2:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
   if (memcmp(what_to_say, report_says, what_to_say_size) != 0) {
-      printf("what_to_say:\n\"");
+    printf("kVerify4 sees what_to_say #2:\n\"");
     for (int i = 0; i < what_to_say_size; i++) {
-        printf("%d", what_to_say[i]);
+      printf("%d ", what_to_say[i]);
     }
     printf("\"\nreport says:\n\"");
-      for (int i = 0; i < what_to_say_size; i++) {
-          printf("%d", report_says[i]);
-      }
-      printf("\"\n");
+    for (int i = 0; i < what_to_say_size; i++) {
+      printf("%d ", report_says[i]);
+    }
+    printf("\"\n");
     return false;
   }
 
