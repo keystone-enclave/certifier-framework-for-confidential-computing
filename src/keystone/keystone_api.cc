@@ -29,11 +29,20 @@ bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int at
     return false;
   }
 
-  if (report.getDataSize() != (unsigned int) (what_to_say_size + 1)) {
+  if (report.getDataSize() != (unsigned int) what_to_say_size) {
     return false;
   }
   byte* report_says = (byte*) report.getDataSection();
   if (memcmp(what_to_say, report_says, what_to_say_size) != 0) {
+      printf("what_to_say:\n\"");
+    for (int i = 0; i < what_to_say_size; i++) {
+        printf("%d", what_to_say[i]);
+    }
+    printf("\"\nreport says:\n\"");
+      for (int i = 0; i < what_to_say_size; i++) {
+          printf("%d", report_says[i]);
+      }
+      printf("\"\n");
     return false;
   }
 

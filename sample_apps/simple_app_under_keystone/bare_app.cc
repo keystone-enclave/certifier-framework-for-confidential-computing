@@ -68,6 +68,11 @@ bool keystone_test(const int cert_size, byte *cert) {
     for (int i = 0; i < size_what_to_say; i++) {
         what_to_say[i] = (byte)i;
     }
+    printf("bare_app sees what_to_say:\n\"");
+    for (int i = 0; i < size_what_to_say; i++) {
+        printf("%d", what_to_say[i]);
+    }
+    printf("\"\n");
 
     printf("&size_attestation: %x", &size_attestation);
     if (!keystone_Attest(size_what_to_say, what_to_say,
