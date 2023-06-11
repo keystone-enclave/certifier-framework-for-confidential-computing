@@ -19,20 +19,30 @@ bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attesta
   printf("*attestation_size_out: %d\n", *attestation_size_out);
   printf("keystone_Attest 1 sees what_to_say:\n\"");
   for (int i = 0; i < what_to_say_size; i++) {
-      printf("%d ", what_to_say[i]);
+    printf("%d ", what_to_say[i]);
   }
   printf("\"\n");
   byte what_to_say_copy[what_to_say_size];
   memcpy(what_to_say_copy, what_to_say, what_to_say_size);
   printf("keystone_Attest 2 sees what_to_say:\n\"");
   for (int i = 0; i < what_to_say_size; i++) {
-      printf("%d ", what_to_say[i]);
+    printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
+  printf("keystone_Attest 2 sees what_to_say_copy:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say_copy[i]);
   }
   printf("\"\n");
   bool ret = attest_enclave((void *) attestation_out, what_to_say_copy, what_to_say_size) == 0;
   printf("keystone_Attest 3 sees what_to_say:\n\"");
   for (int i = 0; i < what_to_say_size; i++) {
     printf("%d ", what_to_say[i]);
+  }
+  printf("\"\n");
+  printf("keystone_Attest 3 sees what_to_say_copy:\n\"");
+  for (int i = 0; i < what_to_say_size; i++) {
+    printf("%d ", what_to_say_copy[i]);
   }
   printf("\"\n");
   return ret;
