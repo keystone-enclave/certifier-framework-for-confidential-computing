@@ -70,12 +70,14 @@ bool keystone_test(const int cert_size, byte *cert) {
         what_to_say[i] = (byte)i;
     }
 
+    printf("&size_attestation: %x", &size_attestation);
     if (!keystone_Attest(size_what_to_say, what_to_say,
                          &size_attestation, attestation)) {
-        printf("keystone_Attest() fails, ret: %d\n", ret);
+        printf("keystone_Attest() fails, ret: %d\n");
         success = false;
     }
-    printf("keystone_Attest() successful!\n");
+
+    printf("%d\n", size_attestation);
     if (!keystone_Verify(size_what_to_say, what_to_say,
                          size_attestation, attestation, &size_measurement, measurement)) {
         printf("keystone_Verify() fails\n");

@@ -20,7 +20,7 @@ KEYSTONE_FLAGS = -DUSE_PAGE_CRYPTO
 CC = riscv64-unknown-linux-gnu-g++
 LINK = riscv64-unknown-linux-gnu-g++
 # flags from Keystone
-CFLAGS = -Wall -fno-builtin -I$(KEYSTONE_SDK_INCLUDE) -I$(KEYSTONE_RT_INCLUDE)
+CFLAGS = -Wall -I$(KEYSTONE_SDK_INCLUDE) -I$(KEYSTONE_RT_INCLUDE)
 LDFLAGS = -static -L$(KEYSTONE_SDK_LIB_DIR) $(KEYSTONE_SDK_LIBS)
 
 # Example app building

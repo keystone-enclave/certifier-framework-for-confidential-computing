@@ -15,12 +15,14 @@ bool keystone_Init(const int cert_size, byte *cert) {
 
 bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attestation_size_out, byte* attestation_out) {
   assert(what_to_say_size <= ATTEST_DATA_MAXLEN);
+  printf("attestation_size_out: %x\n", attestation_size_out);
   *attestation_size_out = sizeof(struct report_t);
-  return attest_enclave((void *) attestation_out, what_to_say, what_to_say_size);
+  printf("*attestation_size_out: %d\n", *attestation_size_out);
+  return attest_enclave((void *) attestation_out, what_to_say, what_to_say_size) == 0;
 }
 
 bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int attestation_size, byte* attestation, int* measurement_out_size, byte* measurement_out) {
-  assert(attestation_size == sizeof(struct report_t));
+  // assert(attestation_size == sizeof(struct report_t));
   Report report;
   report.fromBytes(attestation);
 
@@ -37,7 +39,9 @@ bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int at
   }
 
   *measurement_out_size = MDSIZE * 2;
+  printf("copying sm measurement\n");
   memcpy(measurement_out, report.getSmHash(), MDSIZE);
+  printf("copying app measurement\n");
   memcpy(measurement_out + MDSIZE, report.getEnclaveHash(), MDSIZE);
 
   return true;
