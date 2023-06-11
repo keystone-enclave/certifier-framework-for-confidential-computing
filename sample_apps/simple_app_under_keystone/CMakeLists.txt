@@ -11,8 +11,9 @@ find_program(MAKESELF makeself)
 use_riscv_toolchain(64)
 
 get_filename_component(eapp_bin ${KEYSTONE_EAPP_BIN} NAME)
-add_custom_command(OUTPUT ${eapp_bin}
-	COMMAND ${CMAKE_MAKE_PROGRAM} -C ${CMAKE_CURRENT_SOURCE_DIR} -f keystone_example_app.mak ${eapp_bin})
+add_custom_command(
+    OUTPUT ${eapp_bin} keystone_api.o keystone_aes.o bare_app.o
+    COMMAND ${CMAKE_MAKE_PROGRAM} -C ${CMAKE_CURRENT_SOURCE_DIR} -f keystone_example_app.mak ${eapp_bin})
 set(host_bin runner)
 set(host_src host/host.cpp)
 set(package_name "certifier.ke")

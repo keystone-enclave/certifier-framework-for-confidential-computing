@@ -2,7 +2,6 @@
 /* Dependencies: Keystone SDK, Keystone Runtime for crypto. */
 extern "C" {
   #include "app/syscall.h"
-  #include "app/string.h"
 }
 #include "crypto/aes.h"
 #include "verifier/report.h"

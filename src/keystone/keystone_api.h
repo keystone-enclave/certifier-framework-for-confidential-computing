@@ -13,15 +13,15 @@
 // limitations under the License.
 
 #include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdint.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+//#include <stdint.h>
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <dlfcn.h>
-#include <fcntl.h>
-//#include <string.h> // todo: does keystone prefer "app/string.h"?
+//#include <unistd.h>
+//#include <stdlib.h>
+//#include <dlfcn.h>
+//#include <fcntl.h>
+#include <string.h>
 
 #ifndef byte
 typedef unsigned char byte;

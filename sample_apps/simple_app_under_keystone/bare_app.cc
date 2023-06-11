@@ -15,7 +15,6 @@
 // TODO: should use src/keystone/keystone_tests instead
 
 #include "keystone_api.h"
-#include <string.h>
 
 #define SIZE_SECRET 32 // any
 #define SIZE_WHAT_TO_SAY 256 // <= 1024
@@ -60,7 +59,7 @@ bool keystone_test(const int cert_size, byte *cert) {
     }
 
     int size_what_to_say = SIZE_WHAT_TO_SAY;
-    byte what_to_say[size_secret];
+    byte what_to_say[size_what_to_say];
     int size_attestation = SIZE_ATTESTATION;
     byte attestation[size_attestation];
     int size_measurement = SIZE_MEASUREMENT;
@@ -73,7 +72,7 @@ bool keystone_test(const int cert_size, byte *cert) {
     printf("&size_attestation: %x", &size_attestation);
     if (!keystone_Attest(size_what_to_say, what_to_say,
                          &size_attestation, attestation)) {
-        printf("keystone_Attest() fails, ret: %d\n");
+        printf("keystone_Attest() fails\n");
         success = false;
     }
 
