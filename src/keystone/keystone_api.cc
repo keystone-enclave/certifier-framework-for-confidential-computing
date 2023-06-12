@@ -12,87 +12,60 @@ bool keystone_Init(const int cert_size, byte *cert) {
   return true;
 }
 
+void print_array(const char* msg, byte* arr, int size) {
+    printf("%s\n\"", msg);
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\"\n");
+}
+
 bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attestation_size_out, byte* attestation_out) {
+  /* Do not edit if at all possible.
+   * The sensible way of writing this function triggers bugs in either attest_enclave or C++ compiler.
+   */
   assert(what_to_say_size <= ATTEST_DATA_MAXLEN);
-  printf("attestation_size_out: %x\n", attestation_size_out);
   *attestation_size_out = sizeof(struct report_t);
-  printf("*attestation_size_out: %d\n", *attestation_size_out);
-  printf("keystone_Attest 1 sees what_to_say:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
-  byte what_to_say_copy[what_to_say_size];
+
+  byte what_to_say_copy[ATTEST_DATA_MAXLEN];
   memcpy(what_to_say_copy, what_to_say, what_to_say_size);
-  printf("keystone_Attest 2 sees what_to_say:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
-  printf("keystone_Attest 2 sees what_to_say_copy:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say_copy[i]);
-  }
-  printf("\"\n");
+  print_array("@keystone_Attest 1 :: what_to_say:", what_to_say, what_to_say_size);
+  print_array("@keystone_Attest 1 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
+  printf("@keystone_Attest 1 :: *attestation_size_out: %d\n\n", *attestation_size_out);
+
   bool ret = attest_enclave((void *) attestation_out, what_to_say_copy, what_to_say_size) == 0;
-  printf("keystone_Attest 3 sees what_to_say:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
-  printf("keystone_Attest 3 sees what_to_say_copy:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say_copy[i]);
-  }
-  printf("\"\n");
+  print_array("@keystone_Attest 2 :: what_to_say:", what_to_say, what_to_say_size);
+  print_array("@keystone_Attest 2 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
+  printf("@keystone_Attest 2 :: *attestation_size_out: %d\n\n", *attestation_size_out);
+
+  memcpy(what_to_say, what_to_say_copy, what_to_say_size);
+  *attestation_size_out = sizeof(struct report_t);
+  print_array("@keystone_Attest 3 :: what_to_say:", what_to_say, what_to_say_size);
+  print_array("@keystone_Attest 3 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
+  printf("@keystone_Attest 3 :: *attestation_size_out: %d\n\n", *attestation_size_out);
+
   return ret;
 }
 
 bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int attestation_size, byte* attestation, int* measurement_out_size, byte* measurement_out) {
-  // assert(attestation_size == sizeof(struct report_t));
-  printf("kVerify1 sees what_to_say #2:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
+  assert(attestation_size == sizeof(struct report_t));
   Report report;
   report.fromBytes(attestation);
 
   if(!report.checkSignaturesOnly(_sanctum_dev_public_key)) {
     return false;
   }
-  printf("kVerify2 sees what_to_say #2:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
 
   if (report.getDataSize() != (unsigned int) what_to_say_size) {
     return false;
   }
   byte* report_says = (byte*) report.getDataSection();
-  printf("kVerify3 sees what_to_say #2:\n\"");
-  for (int i = 0; i < what_to_say_size; i++) {
-    printf("%d ", what_to_say[i]);
-  }
-  printf("\"\n");
   if (memcmp(what_to_say, report_says, what_to_say_size) != 0) {
-    printf("kVerify4 sees what_to_say #2:\n\"");
-    for (int i = 0; i < what_to_say_size; i++) {
-      printf("%d ", what_to_say[i]);
-    }
-    printf("\"\nreport says:\n\"");
-    for (int i = 0; i < what_to_say_size; i++) {
-      printf("%d ", report_says[i]);
-    }
-    printf("\"\n");
     return false;
   }
 
   *measurement_out_size = MDSIZE * 2;
-  printf("copying sm measurement\n");
   memcpy(measurement_out, report.getSmHash(), MDSIZE);
-  printf("copying app measurement\n");
   memcpy(measurement_out + MDSIZE, report.getEnclaveHash(), MDSIZE);
 
   return true;
