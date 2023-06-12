@@ -21,7 +21,7 @@
 //#include <stdlib.h>
 //#include <dlfcn.h>
 //#include <fcntl.h>
-#include <string.h>
+#include <cstring>
 
 #ifndef byte
 typedef unsigned char byte;

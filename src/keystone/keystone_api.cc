@@ -28,7 +28,7 @@ bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attesta
   *attestation_size_out = sizeof(struct report_t);
 
   byte what_to_say_copy[what_to_say_size];
-  memcpy(what_to_say_copy, what_to_say, what_to_say_size);
+  std::memcpy(what_to_say_copy, what_to_say, what_to_say_size);
   print_array("@keystone_Attest 1 :: what_to_say:", what_to_say, what_to_say_size);
   print_array("@keystone_Attest 1 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
   printf("@keystone_Attest 1 :: *attestation_size_out: %d\n\n", *attestation_size_out);
@@ -38,7 +38,7 @@ bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attesta
   print_array("@keystone_Attest 2 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
   printf("@keystone_Attest 2 :: *attestation_size_out: %d\n\n", *attestation_size_out);
 
-  memcpy(what_to_say, what_to_say_copy, what_to_say_size);
+  std::memcpy(what_to_say, what_to_say_copy, what_to_say_size);
   *attestation_size_out = sizeof(struct report_t);
   print_array("@keystone_Attest 3 :: what_to_say:", what_to_say, what_to_say_size);
   print_array("@keystone_Attest 3 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
@@ -60,13 +60,13 @@ bool keystone_Verify(const int what_to_say_size, byte* what_to_say, const int at
     return false;
   }
   byte* report_says = (byte*) report.getDataSection();
-  if (memcmp(what_to_say, report_says, what_to_say_size) != 0) {
+  if (std::memcmp(what_to_say, report_says, what_to_say_size) != 0) {
     return false;
   }
 
   *measurement_out_size = MDSIZE * 2;
-  memcpy(measurement_out, report.getSmHash(), MDSIZE);
-  memcpy(measurement_out + MDSIZE, report.getEnclaveHash(), MDSIZE);
+  std::memcpy(measurement_out, report.getSmHash(), MDSIZE);
+  std::memcpy(measurement_out + MDSIZE, report.getEnclaveHash(), MDSIZE);
 
   return true;
 }
@@ -80,7 +80,7 @@ bool keystone_getSealingKey(WORD key[]) {
   struct sealing_key key_buffer; // {key, signature}
   char key_identifier[] = "sealing-key";
   int err = get_sealing_key(&key_buffer, sizeof(key_buffer),
-                        (void *)key_identifier, strlen(key_identifier));
+                        (void *)key_identifier, std::strlen(key_identifier));
   if (err) {
     return false;
   }
@@ -94,7 +94,7 @@ bool keystone_Seal(int in_size, byte* in, int* size_out, byte* out) {
     return false;
   }
   BYTE iv[AES_BLOCK_SIZE];
-  memset(iv, 0, AES_BLOCK_SIZE * sizeof(BYTE));
+  std::memset(iv, 0, AES_BLOCK_SIZE * sizeof(BYTE));
   *size_out = in_size;
   aes_encrypt_ctr(in, in_size, out, key, AES_KEY_LEN, iv);
   return true;
@@ -106,7 +106,7 @@ bool keystone_Unseal(int in_size, byte* in, int* size_out, byte* out) {
     return false;
   }
   BYTE iv[AES_BLOCK_SIZE];
-  memset(iv, 0, AES_BLOCK_SIZE * sizeof(BYTE));
+  std::memset(iv, 0, AES_BLOCK_SIZE * sizeof(BYTE));
   *size_out = in_size;
   aes_decrypt_ctr(in, in_size, out, key, AES_KEY_LEN, iv);
   return true;
