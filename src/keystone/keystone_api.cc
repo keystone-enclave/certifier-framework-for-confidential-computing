@@ -27,7 +27,7 @@ bool keystone_Attest(const int what_to_say_size, byte* what_to_say, int* attesta
   assert(what_to_say_size <= ATTEST_DATA_MAXLEN);
   *attestation_size_out = sizeof(struct report_t);
 
-  byte what_to_say_copy[ATTEST_DATA_MAXLEN];
+  byte what_to_say_copy[what_to_say_size];
   memcpy(what_to_say_copy, what_to_say, what_to_say_size);
   print_array("@keystone_Attest 1 :: what_to_say:", what_to_say, what_to_say_size);
   print_array("@keystone_Attest 1 :: what_to_say_copy:", what_to_say_copy, what_to_say_size);
