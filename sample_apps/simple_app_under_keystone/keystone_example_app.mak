@@ -16,34 +16,48 @@ endif
 #ifndef GOOGLE_INCLUDE
 #GOOGLE_INCLUDE=/usr/local/include/g
 #endif
-ifndef LOCAL_LIB
-LOCAL_LIB=/usr/local/lib
-endif
+# ifndef LOCAL_LIB
+# LOCAL_LIB=/usr/local/lib
+# endif
 ifndef TARGET_MACHINE_TYPE
-TARGET_MACHINE_TYPE= x64
+TARGET_MACHINE_TYPE=riscv64
 endif
 
 CP = $(CERTIFIER_ROOT)/certifier_service/certprotos
+ifndef KEYSTONE_ROOT_DIR
+    KEYSTONE_ROOT_DIR = /keystone
+endif
+ifndef RISCV_SUPPORT
+    RISCV_SUPPORT = $(SRC_DIR)/src/keystone/package
+endif
+
+# all the Keystone headers, srcs, and libs
+KEYSTONE_SDK_INCLUDE = $(KEYSTONE_ROOT_DIR)/sdk/build64/include
+KEYSTONE_SDK_LIB_DIR = $(KEYSTONE_ROOT_DIR)/sdk/build64/lib
+KEYSTONE_SDK_LIBS = -lkeystone-host -lkeystone-eapp -lkeystone-edge -lkeystone-verifier
+KEYSTONE_RT_INCLUDE = $(KEYSTONE_ROOT_DIR)/runtime/include
+KEYSTONE_RT_SRC = $(KEYSTONE_ROOT_DIR)/runtime
+KEYSTONE_FLAGS = -DUSE_PAGE_CRYPTO -DKEYSTONE_PRESENT
 
 S= $(SRC_DIR)/src
 O= $(OBJ_DIR)
 KS=$(S)/keystone
 US=.
 I= $(SRC_DIR)/include
-INCLUDE= -I$(I) -I/usr/local/opt/openssl@1.1/include/ -I$(S)/sev-snp/ -I$(KS)
-
+INCLUDE= -I$(RISCV_SUPPORT)/include/ -I$(I) -I$(S)/sev-snp/ -I$(KS)
 # Compilation of protobuf files could run into some errors, so avoid using
 # # -Werror for those targets
 CFLAGS_NOERROR=$(INCLUDE) -O3 -g -Wall -std=c++11 -Wno-unused-variable -D X64 -Wno-deprecated-declarations -D KEYSTONE_CERTIFIER
 CFLAGS = $(CFLAGS_NOERROR) -Werror
 CFLAGS1=$(INCLUDE) -O1 -g -Wall -std=c++11 -Wno-unused-variable -D X64 -Wno-deprecated-declarations
-CC=g++
-LINK=g++
+# RISC-V cross compiler
+CC = riscv64-unknown-linux-gnu-g++
+LINK = riscv64-unknown-linux-gnu-g++
 #PROTO=/usr/local/bin/protoc
-PROTO=protoc
-AR=ar
+PROTO=$(RISCV_SUPPORT)/bin/protoc
+AR=riscv64-unknown-linux-gnu-ar
 #export LD_LIBRARY_PATH=/usr/local/lib
-LDFLAGS= -L $(LOCAL_LIB) -lprotobuf -lgtest -lgflags -lpthread -L/usr/local/opt/openssl@1.1/lib/ -lcrypto -lssl
+LDFLAGS=-L/keystone/sdk/build64/lib $(KEYSTONE_SDK_LIBS) $(RISCV_SUPPORT)/lib/libprotobuf.a $(RISCV_SUPPORT)/lib/libssl.a $(RISCV_SUPPORT)/lib/libcrypto.a -ldl -static
 
 # Note:  You can omit all the files below in d_obj except $(O)/example_app.o,
 #  if you link in the certifier library certifier.a.
