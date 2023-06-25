@@ -2,7 +2,7 @@
 # File: src/keystone/shim_test.mak
 # #############################################################################
 
-See sample_apps/simple_app_under_keystone/instructions.md
+# See sample_apps/simple_app_under_keystone/instructions.md
 
 # CERTIFIER_ROOT will be certifier-framework-for-confidential-computing/ dir
 CERTIFIER_ROOT = ../..
