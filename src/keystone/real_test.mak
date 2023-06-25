@@ -1,6 +1,11 @@
-#
-#    File: real_test.mak
-#    See sample_apps/simple_app_under_keystone/instructions.md
+# #############################################################################
+# File: src/keystone/shim_test.mak
+# #############################################################################
+
+See sample_apps/simple_app_under_keystone/instructions.md
+
+# CERTIFIER_ROOT will be certifier-framework-for-confidential-computing/ dir
+CERTIFIER_ROOT = ../..
 
 ifndef SRC_DIR
 SRC_DIR=..
@@ -42,6 +47,8 @@ ifndef TARGET_MACHINE_TYPE
 TARGET_MACHINE_TYPE= RISCV64
 endif
 
+CP = $(CERTIFIER_ROOT)/certifier_service/certprotos
+
 S= $(SRC_DIR)/keystone
 O= $(OBJ_DIR)
 I= $(INC_DIR)
@@ -69,14 +76,16 @@ dobj = $(O)/certifier.pb.o $(O)/certifier.o $(O)/certifier_proofs.o  	  	  	   \
 
 all:	$(EXE_DIR)/keystone_test.exe
 clean:
+	@echo "removing generated files"
+	rm -rf $(S)/certifier.pb.cc $(S)/certifier.pb.h $(I)/certifier.pb.h
 	@echo "removing object files"
 	rm -rf $(O)/*.o
 	@echo "removing executable files"
 	rm -rf $(EXE_DIR)/keystone_test.exe
 
-$(SRC_DIR)/certifier.pb.cc $(I)/certifier.pb.h: $(SRC_DIR)/certifier.proto
-	$(PROTO) --proto_path=$(SRC_DIR) --cpp_out=$(SRC_DIR) $(SRC_DIR)/certifier.proto
-	mv $(SRC_DIR)/certifier.pb.h $(I)
+$(S)/certifier.pb.cc $(I)/certifier.pb.h: $(CP)/certifier.proto
+	$(PROTO) --proto_path=$(CP) --cpp_out=$(S) $<
+	mv $(S)/certifier.pb.h $(I)
 
 $(EXE_DIR)/keystone_test.exe: $(dobj) | $(O)
 	@echo "linking certifier library"
@@ -97,7 +106,7 @@ $(O)/keystone_aes.o: $(KEYSTONE_RT_SRC)/crypto/aes.c | $(O)
 
 $(O)/certifier.pb.o: $(SRC_DIR)/certifier.pb.cc $(I)/certifier.pb.h | $(O)
 	@echo "compiling certifier.pb.cc"
-	$(CC) $(CFLAGS) -Wno-array-bounds -c -o $(O)/certifier.pb.o $(SRC_DIR)/certifier.pb.cc
+	$(CC) $(CFLAGS) -Wno-array-bounds -c -o $(O)/certifier.pb.o $<
 
 $(O)/certifier.o: $(SRC_DIR)/certifier.cc $(I)/certifier.pb.h $(I)/certifier.h | $(O)
 	@echo "compiling certifier.cc"
