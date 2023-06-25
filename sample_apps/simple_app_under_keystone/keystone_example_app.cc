@@ -11,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-#include <gtest/gtest.h>
-#include <gflags/gflags.h>
+// #include <gtest/gtest.h>
+// #include <gflags/gflags.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include  <netdb.h>
+#include <netdb.h>
 #include <openssl/ssl.h>
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
@@ -32,22 +31,21 @@
 using namespace certifier::framework;
 
 // operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server
-DEFINE_bool(print_all, false,  "verbose");
-DEFINE_string(operation, "", "operation");
+bool print_all = false;
+string operation = "cold-init";
 
-DEFINE_string(policy_host, "localhost", "address for policy server");
-DEFINE_int32(policy_port, 8123, "port for policy server");
-DEFINE_string(data_dir, "./app1_data/", "directory for application data");
+string policy_host = "localhost";
+int policy_port = 8123;
+string data_dir = "./app1_data/";
 
-DEFINE_string(server_app_host, "localhost", "address for app server");
-DEFINE_int32(server_app_port, 8124, "port for server app server");
+string server_app_host = "localhost";
+int server_app_port = 8124;
 
-DEFINE_string(policy_store_file, "store.bin", "policy store file name");
-DEFINE_string(platform_file_name, "platform_file.bin", "platform certificate");
-DEFINE_string(platform_attest_endorsement, "platform_attest_endorsement.bin", "platform endorsement of attest key");
-DEFINE_string(attest_key_file, "attest_key_file.bin", "attest key");
-DEFINE_string(measurement_file, "example_app.measurement", "measurement");
-
+string policy_store_file = "store.bin";
+string platform_file_name = "platform_file.bin";
+string platform_attest_endorsement = "platform_attest_endorsement.bin";
+string attest_key_file = "attest_key_file.bin";
+string measurement_file = "example_app.measurement";
 
 // The test app performs five possible roles
 //    cold-init: This creates application keys and initializes the policy store.
@@ -103,26 +101,24 @@ void server_application(secure_authenticated_channel& channel) {
 }
 
 int main(int an, char** av) {
-  string usage("Keystone-based simple app");
-  gflags::ParseCommandLineFlags(&an, &av, true);
-  an = 1;
-  ::testing::InitGoogleTest(&an, av);
+  // gflags::ParseCommandLineFlags(&an, &av, true);
+  // an = 1;
+  // ::testing::InitGoogleTest(&an, av);
 
-  if (FLAGS_operation == "") {
-    printf("%s: %s\n\n", av[0], usage.c_str());
-    printf("example_app.exe --print_all=true|false --operation=op --policy_host=policy-host-address --policy_port=policy-host-port\n");
-    printf("\t --data_dir=-directory-for-app-data --server_app_host=my-server-host-address --server_app_port=server-host-port\n");
-    printf("\t --policy_cert_file=self-signed-policy-cert-file-name --policy_store_file=policy-store-file-name\n");
-    printf("Operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server\n");
-    return 0;
-  }
+  // if (operation == "") {
+  //   printf("example_app.exe --print_all=true|false --operation=op --policy_host=policy-host-address --policy_port=policy-host-port\n");
+  //   printf("\t --data_dir=-directory-for-app-data --server_app_host=my-server-host-address --server_app_port=server-host-port\n");
+  //   printf("\t --policy_cert_file=self-signed-policy-cert-file-name --policy_store_file=policy-store-file-name\n");
+  //   printf("Operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server\n");
+  //   return 0;
+  // }
 
   SSL_library_init();
   string enclave_type("keystone-enclave");
   string purpose("authentication");
 
-  string store_file(FLAGS_data_dir);
-  store_file.append(FLAGS_policy_store_file);
+  string store_file(data_dir);
+  store_file.append(policy_store_file);
   app_trust_data = new cc_trust_data(enclave_type, purpose, store_file);
   if (app_trust_data == nullptr) {
     printf("couldn't initialize trust object\n");
@@ -135,11 +131,11 @@ int main(int an, char** av) {
     return 1;
   }
 
-  string platform_attest_file_name(FLAGS_data_dir);
-  string measurement_file_name(FLAGS_data_dir);
-  measurement_file_name.append(FLAGS_measurement_file);
-  string attest_key_file_name(FLAGS_data_dir);
-  attest_key_file_name.append(FLAGS_attest_key_file);
+  string platform_attest_file_name(data_dir);
+  string measurement_file_name(data_dir);
+  measurement_file_name.append(measurement_file);
+  string attest_key_file_name(data_dir);
+  attest_key_file_name.append(attest_key_file);
 
   string endorsement_cert;
 
@@ -155,23 +151,23 @@ int main(int an, char** av) {
 
   // Carry out operation
   int ret = 0;
-  if (FLAGS_operation == "cold-init") {
+  if (operation == "cold-init") {
     if (!app_trust_data->cold_init(public_key_alg, symmetric_key_alg)) {
       printf("cold-init failed\n");
       ret = 1;
     }
-  } else if (FLAGS_operation == "warm-restart") {
+  } else if (operation == "warm-restart") {
     if (!app_trust_data->warm_restart()) {
       printf("warm-restart failed\n");
       ret = 1;
     }
 
-  } else if (FLAGS_operation == "get-certifier") {
-    if (!app_trust_data->certify_me(FLAGS_policy_host, FLAGS_policy_port)) {
+  } else if (operation == "get-certifier") {
+    if (!app_trust_data->certify_me(policy_host, policy_port)) {
       printf("certification failed\n");
       ret = 1;
     }
-  } else if (FLAGS_operation == "run-app-as-client") {
+  } else if (operation == "run-app-as-client") {
     string my_role("client");
     secure_authenticated_channel channel(my_role);
 
@@ -189,7 +185,7 @@ int main(int an, char** av) {
       goto done;
     }
 
-    if (!channel.init_client_ssl(FLAGS_server_app_host, FLAGS_server_app_port,
+    if (!channel.init_client_ssl(server_app_host, server_app_port,
           app_trust_data->serialized_policy_cert_,
           app_trust_data->private_auth_key_,
           app_trust_data->private_auth_key_.certificate())) {
@@ -200,14 +196,14 @@ int main(int an, char** av) {
 
   // This is the actual application code.
   client_application(channel);
-  } else if (FLAGS_operation == "run-app-as-server") {
+  } else if (operation == "run-app-as-server") {
     if (!app_trust_data->warm_restart()) {
       printf("warm-restart failed\n");
       ret = 1;
       goto done;
     }
     printf("Running App as server\n");
-    if (!server_dispatch(FLAGS_server_app_host, FLAGS_server_app_port,
+    if (!server_dispatch(server_app_host, server_app_port,
                          app_trust_data->serialized_policy_cert_,
                          app_trust_data->private_auth_key_,
                          app_trust_data->private_auth_key_.certificate(),
