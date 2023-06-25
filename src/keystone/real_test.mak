@@ -104,7 +104,7 @@ $(O)/keystone_aes.o: $(KEYSTONE_RT_SRC)/crypto/aes.c | $(O)
 	mkdir -p $(O)
 	$(CC) $(CFLAGS) $(KEYSTONE_FLAGS) -c -o $(O)/keystone_aes.o $(KEYSTONE_RT_SRC)/crypto/aes.c
 
-$(O)/certifier.pb.o: $(SRC_DIR)/certifier.pb.cc $(I)/certifier.pb.h | $(O)
+$(O)/certifier.pb.o: $(S)/certifier.pb.cc $(I)/certifier.pb.h | $(O)
 	@echo "compiling certifier.pb.cc"
 	$(CC) $(CFLAGS) -Wno-array-bounds -c -o $(O)/certifier.pb.o $<
 
