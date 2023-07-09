@@ -24,7 +24,7 @@ ifndef KEYSTONE_ROOT_DIR
     KEYSTONE_ROOT_DIR = /keystone
 endif
 ifndef RISCV_SUPPORT
-    RISCV_SUPPORT = /root/package
+    RISCV_SUPPORT = $(SRC_DIR)/../packages
 endif
 
 # all the Keystone headers, srcs, and libs

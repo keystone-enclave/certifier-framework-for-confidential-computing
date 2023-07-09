@@ -3,7 +3,7 @@ project(certifier-keystone)
 
 set(KEYSTONE_SDK_DIR "/keystone/sdk/build64")
 set(KEYSTONE_EYRIE_RUNTIME "/keystone/runtime")
-set(KEYSTONE_EAPP_BIN "keystone_example_app.exe")
+set(KEYSTONE_EAPP_BIN "keystone_app.exe")
 
 include(${KEYSTONE_SDK_DIR}/cmake/macros.cmake)
 

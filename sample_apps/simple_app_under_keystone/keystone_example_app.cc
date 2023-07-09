@@ -32,7 +32,11 @@ using namespace certifier::framework;
 
 // operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server
 bool print_all = false;
+<<<<<<< HEAD
 string operation = "";
+=======
+string operation = "cold-init";
+>>>>>>> d960c2806d4ebcd25a5fcd7f00980519fbbec494
 
 string policy_host = "localhost";
 int policy_port = 8123;
