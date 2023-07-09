@@ -32,7 +32,7 @@ using namespace certifier::framework;
 
 // operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server
 bool print_all = false;
-string operation = "cold-init";
+string operation = "";
 
 string policy_host = "localhost";
 int policy_port = 8123;
@@ -112,6 +112,24 @@ int main(int an, char** av) {
   //   printf("Operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server\n");
   //   return 0;
   // }
+  
+  /* Keystone's argument passing is currently broken -- we pass the argument via args.txt */
+  FILE *file;
+  char _operation[100];
+
+  file = fopen("operation.txt", "r");
+  if (file == NULL) {
+      printf("Failed to open the file.\n");
+      return 1;
+  }
+
+  if (fgets(_operation, sizeof(_operation), file) != NULL) {
+      printf("Operation: %s", _operation);
+  } else {
+      printf("Failed to read the string from the file.\n");
+      return 1;
+  }
+  operation = string(_operation);
 
   SSL_library_init();
   string enclave_type("keystone-enclave");
@@ -150,8 +168,11 @@ int main(int an, char** av) {
   string symmetric_key_alg("aes-256-cbc-hmac-sha256");
 
   // Carry out operation
+
+  printf("Entering operation\n");
   int ret = 0;
   if (operation == "cold-init") {
+    printf("Cold Init...\n");
     if (!app_trust_data->cold_init(public_key_alg, symmetric_key_alg)) {
       printf("cold-init failed\n");
       ret = 1;
@@ -214,6 +235,7 @@ int main(int an, char** av) {
   } else {
     printf("Unknown operation\n");
   }
+  printf("Done");
 
 done:
   // app_trust_data->print_trust_data();

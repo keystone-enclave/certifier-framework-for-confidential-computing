@@ -51,11 +51,11 @@ CFLAGS_NOERROR=$(INCLUDE) -O3 -g -Wall -std=c++11 -Wno-unused-variable -D X64 -W
 CFLAGS = $(CFLAGS_NOERROR) -Werror
 CFLAGS1=$(INCLUDE) -O1 -g -Wall -std=c++11 -Wno-unused-variable -D X64 -Wno-deprecated-declarations
 # RISC-V cross compiler
-CC = riscv64-unknown-linux-gnu-g++
-LINK = riscv64-unknown-linux-gnu-g++
+CC = riscv64-unknown-linux-musl-g++
+LINK = riscv64-unknown-linux-musl-g++
 #PROTO=/usr/local/bin/protoc
 PROTO=$(RISCV_SUPPORT)/bin/protoc
-AR=riscv64-unknown-linux-gnu-ar
+AR=riscv64-unknown-linux-musl-ar
 #export LD_LIBRARY_PATH=/usr/local/lib
 LDFLAGS=-L/keystone/sdk/build64/lib $(KEYSTONE_SDK_LIBS) $(RISCV_SUPPORT)/lib/libprotobuf.a $(RISCV_SUPPORT)/lib/libssl.a $(RISCV_SUPPORT)/lib/libcrypto.a -ldl -static
 

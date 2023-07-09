@@ -3,7 +3,7 @@ project(certifier-keystone)
 
 set(KEYSTONE_SDK_DIR "/keystone/sdk/build64")
 set(KEYSTONE_EYRIE_RUNTIME "/keystone/runtime")
-set(KEYSTONE_EAPP_BIN "keystone_app.exe")
+set(KEYSTONE_EAPP_BIN "keystone_example_app.exe")
 
 include(${KEYSTONE_SDK_DIR}/cmake/macros.cmake)
 
@@ -14,12 +14,12 @@ get_filename_component(eapp_bin ${KEYSTONE_EAPP_BIN} NAME)
 set(host_bin runner)
 set(host_src host/host.cpp)
 set(package_name "certifier.ke")
-set(package_script "./runner keystone_app.exe eyrie-rt")
+set(package_script "./runner ${KEYSTONE_EAPP_BIN} eyrie-rt")
 
 if(RISCV32)
-  set(eyrie_plugins "freemem io_syscall linux_syscall env_setup rv32")
+  set(eyrie_plugins "freemem io_syscall linux_syscall net_syscall debug env_setup rv32")
 else()
-  set(eyrie_plugins "freemem io_syscall linux_syscall env_setup")
+  set(eyrie_plugins "freemem io_syscall linux_syscall net_syscall debug env_setup")
 endif()
 
 # host
