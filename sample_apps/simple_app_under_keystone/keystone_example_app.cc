@@ -32,13 +32,9 @@ using namespace certifier::framework;
 
 // operations are: cold-init, warm-restart, get-certifier, run-app-as-client, run-app-as-server
 bool print_all = false;
-<<<<<<< HEAD
 string operation = "";
-=======
-string operation = "cold-init";
->>>>>>> d960c2806d4ebcd25a5fcd7f00980519fbbec494
 
-string policy_host = "localhost";
+string policy_host = "192.168.100.2";
 int policy_port = 8123;
 string data_dir = "./app1_data/";
 
@@ -189,7 +185,7 @@ int main(int an, char** av) {
 
   } else if (operation == "get-certifier") {
     if (!app_trust_data->certify_me(policy_host, policy_port)) {
-      printf("certification failed\n");
+      printf("certification failed, %s, %d\n", policy_host.c_str(), policy_port);
       ret = 1;
     }
   } else if (operation == "run-app-as-client") {

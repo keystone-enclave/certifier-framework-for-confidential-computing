@@ -19,7 +19,7 @@ set(package_script "./runner ${KEYSTONE_EAPP_BIN} eyrie-rt")
 if(RISCV32)
   set(eyrie_plugins "freemem io_syscall linux_syscall net_syscall debug env_setup rv32")
 else()
-  set(eyrie_plugins "freemem io_syscall linux_syscall net_syscall debug env_setup")
+  set(eyrie_plugins "freemem io_syscall linux_syscall net_syscall debug env_setup internal_strace")
 endif()
 
 # host
